@@ -1,0 +1,22 @@
+<div class="gameboard" cdkDropListGroup>
+<div class="gameboard-row" *ngFor="let row of tiles; let i = index" (cdkDropListDropped)="drop($any($event))">
+  <div 
+     class="gameboard-tile" 
+    *ngFor="let tile of row; let j = index" 
+    [style.background-color]="tile.color"
+     cdkDropList (cdkDropListDropped)="drop($any($event))" [cdkDropListData]="{x: i, y:j}"
+  >
+  <div class="piece"
+	  *ngIf="tile.piece"
+	  cdkDrag [cdkDragData]="{x: i, y: j, piece: tile.piece}"
+	  [cdkDragDisabled]="tile.piece.alliance == currentTurn"
+	  
+	  
+	  >
+      <img src="assets/white_king.png" height="100%" *ngIf="tile.piece.alliance == 0">
+      <img src="assets/black_king.png" height="100%" *ngIf="tile.piece.alliance == 1">
+    </div>
+  </div>
+</div>
+</div>
+		
