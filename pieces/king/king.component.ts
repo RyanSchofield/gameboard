@@ -18,15 +18,55 @@ export class King implements OnInit {
   ngOnInit(): void {
   }
 
-  public validateMove(origin: any, target: any) {
-    return Math.abs(origin.x - target.x) <= 1 && Math.abs(origin.y - target.y) <= 1;
+  public validateMove(origin: any, target: any, tiles: any[][]) {
+    return this.getValidMoveTiles(origin, tiles)[target.x][target.y];
   }
 
-  public getValidMovePositions(target: any) {
-    let validMoves = [];
+  public getValidMoveTiles(origin: any, tiles: any[]): any[][] {
+    let validMoves: any[][] = [];
+
+	  for (let i = 0; i < tiles.length; i++) {
+	    validMoves[i] = [];
+          }
+    let topRow = origin.y + 1 > 7;
+    let bottomRow = origin.y - 1 < 0;
+    let leftCol = origin.x - 1 < 0;
+    let rightCol = origin.x + 1 > 7; 
     
-    if (target.x + 1 < 8 && target.y + 1 < 8) {
-      validMoves.push(5);
+    if (!topRow && tiles[origin.x][ origin.y + 1].piece?.alliance != this.alliance) {
+	    validMoves[origin.x][origin.y + 1] = true;
+    
     }
+
+    if (!bottomRow && tiles[origin.x][origin.y - 1].piece?.alliance != this.alliance) {
+	    validMoves[origin.x][origin.y - 1] = true;
+    }
+
+    if (!leftCol && tiles[origin.x - 1][origin.y].piece?.alliance != this.alliance) {
+	    validMoves[origin.x - 1][origin.y] = true;
+    }
+
+    if (!rightCol && tiles[origin.x + 1][origin.y].piece?.alliance != this.alliance) {
+	    validMoves[origin.x + 1][origin.y] = true;
+    }
+
+    if (!topRow && !leftCol && tiles[origin.x + 1][origin.y - 1].piece?.alliance != this.alliance) {
+	    validMoves[origin.x + 1][origin.y - 1] = true;
+
+    }
+
+    if (!topRow && !rightCol && tiles[origin.x + 1][origin.y + 1].piece?.alliance != this.alliance) {
+	    validMoves[origin.x + 1][origin.y + 1] = true;
+    }
+
+    if (!bottomRow && !leftCol && tiles[origin.x - 1][origin.y - 1].piece?.alliance != this.alliance) {
+    	    validMoves[origin.x - 1][origin.y - 1] = true;
+    }
+
+    if (!bottomRow && !rightCol && tiles[origin.x - 1][origin.y + 1].piece?.alliance != this.alliance) {
+            validMoves[origin.x - 1][origin.y + 1] = true; 
+    }
+
+    return validMoves;
   }
 }

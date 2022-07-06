@@ -15,8 +15,11 @@ export class GameboardComponent implements OnInit {
 
   public currentTurn: Alliance;
 
+	public highlightedTiles: any[][];
 
-  constructor( ) { this.currentTurn = Alliance.WHITE }
+	private _unhighlightedTiles : any[][];
+
+  constructor( ) { this.currentTurn = Alliance.WHITE; this.highlightedTiles = this._noHighlightedTiles(); this._unhighlightedTiles = this._noHighlightedTiles()}
 
   ngOnInit(): void {
     this.tiles = [];
@@ -28,7 +31,8 @@ export class GameboardComponent implements OnInit {
         }
       }
     }
-    
+    this._unhighlightedTiles = this._noHighlightedTiles();
+    this.highlightedTiles = this._noHighlightedTiles();
 
 	  this.tiles[1][1].piece = new King(Alliance.WHITE);
 	  this.tiles[5][5].piece = new King(Alliance.BLACK);
@@ -36,20 +40,24 @@ export class GameboardComponent implements OnInit {
   }
 
 	drop(event: CdkDragDrop<any>) {
+		console.log('move attempted');
 		console.log(event);
 		//moveItemInArray(this.tiles, event.previousIndex, event.currentIndex);
 
 		let target = {x: event.container.data.x, y: event.container.data.y};
 		let origin = {x: event.item.data.x, y: event.item.data.y};
 
-		if (!this._sameCoordinates(origin, target) && event.item.data.piece.validateMove(origin, target)) {
-		  this.tiles[target.x][target.y].piece = event.item.data.piece;
-		  this.tiles[origin.x][origin.y].piece = null;
+		if (!this._sameCoordinates(origin, target) && event.item.data.piece.validateMove(origin, target, this.tiles)) {
+		
+			this.tiles[target.x][target.y].piece = event.item.data.piece;
+			this.tiles[origin.x][origin.y].piece = null;
 
 			this.currentTurn = this.currentTurn === Alliance.WHITE ? Alliance.BLACK : Alliance.WHITE;
-			console.log(this.currentTurn);
+			console.log('moved piece');
+			console.log(this.currentTurn ? 'white to move' : 'black to move');
+			
 		}
-		console.log('move attempted');
+		this.highlightedTiles = this._unhighlightedTiles;
     
 	}
 
@@ -57,4 +65,21 @@ export class GameboardComponent implements OnInit {
 		return origin.x === target.x && origin.y === target.y;
 	}
 
+	drag(event: any) {
+		console.log('moving piece');
+		console.log(event.source);
+		this.highlightedTiles = event.source.data.piece.getValidMoveTiles({x: event.source.data.x, y: event.source.data.y}, this.tiles);
+		
+	}
+
+	private _noHighlightedTiles() {
+		let tiles: any = [];
+	    for (let i = 0; i < 8; i++) {
+	            tiles[i] = [];
+ 	     	    for (let j = 0; j < 8; j++) {
+     		         tiles[i][j] = false;
+           	 }
+	    }
+	    return tiles;
+	}
 }
