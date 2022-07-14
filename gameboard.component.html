@@ -1,9 +1,17 @@
+<div class="black-graveyard">
+  <div class="captured-piece" *ngFor="let piece of blackGraveyard; let i = index">
+      <img [src]="piece.image" 
+        [style.background-color]="piece.isMysterious ? 'gray' : 'none'"
+        [style.border-radius]="'50%'"
+      >
+  </div>
+</div>
 <div class="gameboard" cdkDropListGroup>
 <div class="gameboard-row" *ngFor="let row of tiles; let i = index" (cdkDropListDropped)="drop($any($event))">
   <div 
      class="gameboard-tile" 
     *ngFor="let tile of row; let j = index" 
-    [style.background-color]="this.highlightedTiles[i][j] ? '#111bbb' : tile.color"
+    [style.background-color]="this.highlightedTiles[i][j] ? tile.highlightedColor : tile.color"
      cdkDropList (cdkDropListDropped)="drop($any($event))" [cdkDropListData]="{x: i, y:j}"
   >
   <div class="piece"
@@ -11,12 +19,19 @@
 	  cdkDrag [cdkDragData]="{x: i, y: j, piece: tile.piece}"
 	  [cdkDragDisabled]="tile.piece.alliance != currentTurn"
 	  (cdkDragStarted)="drag($any($event))" 
-	  
+	  [style.background-color]="tile.piece.isMysterious ? 'gray' : 'none'"
+    [style.border-radius]="'50%'"
 	  >
-      <img src="assets/white_king.png" height="100%" *ngIf="tile.piece.alliance == 1">
-      <img src="assets/black_king.png" height="100%" *ngIf="tile.piece.alliance == 0">
+      <img [src]="tile.piece.image" height="100%">
     </div>
   </div>
 </div>
 </div>
-		
+<div class="white-graveyard">
+  <div class="captured-piece" *ngFor="let piece of whiteGraveyard; let i = index">
+      <img [src]="piece.image" 
+        [style.background-color]="piece.isMysterious ? 'gray' : 'none'"
+        [style.border-radius]="'50%'"
+      >
+  </div>
+</div>

@@ -9,10 +9,12 @@ import { Alliance } from '../../alliance.enum';
 export class King implements OnInit {
   
   public typeDisplay = 'king';
+  public image :string;
   public alliance: Alliance;
 
 	constructor(alliance: Alliance) {
 		this.alliance = alliance;
+    this.image = this.alliance === Alliance.WHITE ? 'assets/white_king.png' : 'assets/black_king.png';
 	}
 
   ngOnInit(): void {
@@ -22,7 +24,7 @@ export class King implements OnInit {
     return this.getValidMoveTiles(origin, tiles)[target.x][target.y];
   }
 
-  public getValidMoveTiles(origin: any, tiles: any[]): any[][] {
+  public getValidMoveTiles(origin: any, tiles: any[]): boolean[][] {
     let validMoves: any[][] = [];
 
 	  for (let i = 0; i < tiles.length; i++) {
@@ -50,8 +52,8 @@ export class King implements OnInit {
 	    validMoves[origin.x + 1][origin.y] = true;
     }
 
-    if (!topRow && !leftCol && tiles[origin.x + 1][origin.y - 1].piece?.alliance != this.alliance) {
-	    validMoves[origin.x + 1][origin.y - 1] = true;
+    if (!topRow && !leftCol && tiles[origin.x - 1][origin.y + 1].piece?.alliance != this.alliance) {
+	    validMoves[origin.x - 1][origin.y + 1] = true;
 
     }
 
@@ -63,8 +65,8 @@ export class King implements OnInit {
     	    validMoves[origin.x - 1][origin.y - 1] = true;
     }
 
-    if (!bottomRow && !rightCol && tiles[origin.x - 1][origin.y + 1].piece?.alliance != this.alliance) {
-            validMoves[origin.x - 1][origin.y + 1] = true; 
+    if (!bottomRow && !rightCol && tiles[origin.x + 1][origin.y - 1 ].piece?.alliance != this.alliance) {
+            validMoves[origin.x + 1][origin.y - 1] = true; 
     }
 
     return validMoves;
