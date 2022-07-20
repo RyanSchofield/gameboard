@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 import { Alliance } from './alliance.enum';
 import { King } from './pieces/king/king.component';
@@ -9,9 +9,11 @@ import { Knight } from './pieces/knight/knight.component';
 import { Queen } from './pieces/queen/queen.component';
 import { Pawn } from './pieces/pawn/pawn.component';
 
-import { Graveyard } from './graveyard/graveyard.component';
+// import { Graveyard } from './graveyard/graveyard.component';
 
+// import { io } from "socket.io-client";
 
+ 
 @Component({
   selector: 'app-gameboard',
   templateUrl: './gameboard.component.html',
@@ -35,9 +37,32 @@ export class GameboardComponent implements OnInit {
 	
 	public blackGraveyard?: any[];
 
+	public message: string = '';
+
+	private socket: any;
+
+	public currentPlayerColor?: Alliance;
+
   constructor( ) { this.currentTurn = Alliance.WHITE; this.highlightedTiles = this._noHighlightedTiles(); this._unhighlightedTiles = this._noHighlightedTiles()}
 
   ngOnInit(): void {
+	// this.socket= io("http://192.168.1.2:3000");
+
+	// this.socket.on("setPlayerColor", (data:any) => {
+	// 	this.currentPlayerColor = data ? Alliance.WHITE : Alliance.BLACK;
+	// 	console.log(this.currentPlayerColor);
+	// })
+
+	// this.socket.on("moveUpdate", (data: any) => {
+	// 	console.log('moveUpdate');
+	// 	// this.tiles = data.tiles;
+	// 	this.currentTurn = data.currentTurn;
+	// 	// this.whiteGraveyard = data.whiteGraveyard;
+	// 	// this.blackGraveyard = data.blackGraveyard;
+	// 	// this._whiteReserve = data.whiteReserve;
+	// 	// this._blackReserve = data.blackReserve;
+	// })
+
 	this._whiteReserve = [
 		new Rook(Alliance.WHITE),
 		new Knight(Alliance.WHITE),
@@ -89,8 +114,12 @@ export class GameboardComponent implements OnInit {
 	// this._whiteGraveyard = new Graveyard();
 	// this._blackGraveyard = new Graveyard();
 
-	this.whiteGraveyard = [new Pawn(Alliance.WHITE)];
+	// let test = new Pawn(Alliance.BLACK);
+	// console.log(test.isRevealed);
+	// test.makeMysterious();
+	// this.whiteGraveyard = [test];
 	this.blackGraveyard = [];
+	this.whiteGraveyard = [];
 	
     this.tiles = [];
     for (let i = 0; i < 8; i++) {
@@ -188,6 +217,7 @@ export class GameboardComponent implements OnInit {
 		// console.log('move attempted');
 		// console.log(event);
 		//moveItemInArray(this.tiles, event.previousIndex, event.currentIndex);
+		this.message = '';
 
 		let target = {x: event.container.data.x, y: event.container.data.y};
 		let origin = {x: event.item.data.x, y: event.item.data.y};
@@ -195,13 +225,25 @@ export class GameboardComponent implements OnInit {
 		if (!this._sameCoordinates(origin, target) && event.item.data.piece.validateMove(origin, target, this.tiles)) {
 		
 			if (this._tileHasEnemy(target, this.tiles, event.item.data.piece.alliance)) {
-				if (this.tiles[target.x][target.y].piece.alliance === Alliance.WHITE) {
-					this.whiteGraveyard?.push(this.tiles[target.x][target.y].piece);
+				if (this.tiles[target.x][target.y].piece.alliance === Alliance.WHITE) { //target is white
+					if (this.tiles[target.x][target.y].piece.isMysterious) {
+						let deadPiece = this._whiteReserve?.pop();
+						deadPiece.makeMysterious();
+						this.whiteGraveyard?.push(deadPiece);
+					} else {
+						this.whiteGraveyard?.push(this.tiles[target.x][target.y].piece);
+					}
 					console.log(this.whiteGraveyard);
-				} else {
-					this.blackGraveyard?.push(this.tiles[target.x][target.y].piece);
-					console.log(this.blackGraveyard);
+				} else { // target is black
+					if (this.tiles[target.x][target.y].piece.isMysterious) {
+						let deadPiece = this._blackReserve?.pop();
+						deadPiece.makeMysterious();
+						this.blackGraveyard?.push(deadPiece);
+					} else {
+						this.blackGraveyard?.push(this.tiles[target.x][target.y].piece);
+					}
 				}
+			
 			}
 			this.tiles[target.x][target.y].piece = event.item.data.piece;
 			this.tiles[origin.x][origin.y].piece = null;
@@ -215,10 +257,34 @@ export class GameboardComponent implements OnInit {
 				}
 			}
 
+			if (event.item.data.piece.typeDisplay === 'pawn' 
+				&& event.item.data.piece.alliance === Alliance.WHITE 
+				&& target.x === 7
+			) {
+				this.tiles[target.x][target.y].piece = new Queen(Alliance.WHITE);
+				this.message = 'Pawn promoted';
+			}
+
+			if (event.item.data.piece.typeDisplay === 'pawn' 
+				&& event.item.data.piece.alliance === Alliance.BLACK 
+				&& target.x === 0
+			) {
+				this.tiles[target.x][target.y].piece = new Queen(Alliance.BLACK);
+				this.message = 'Pawn promoted';
+			}
+
+			
 			this.currentTurn = this.currentTurn === Alliance.WHITE ? Alliance.BLACK : Alliance.WHITE;
 			// console.log('moved piece');
 			console.log(this.currentTurn ? 'white to move' : 'black to move');
-			
+			// this.socket.emit("move",  {
+			// 	tiles: this.tiles,
+			// 	currentTurn: this.currentTurn,
+			// 	whiteReserve: this._whiteReserve,
+			// 	blackResrve: this._blackReserve,
+			// 	whiteGraveyard: this.whiteGraveyard,
+			// 	blackGraveyard: this.blackGraveyard
+			// });
 		}
 		this.highlightedTiles = this._unhighlightedTiles;
     
@@ -255,3 +321,62 @@ export class GameboardComponent implements OnInit {
 		return false;
 	}
 }
+
+//socket logic.
+// first step. display data on connection.
+/**
+ * on the back end, have a player one, player two and spectator arrays with all the sockets
+ * when a socket connects, set player one, two, and spectators in that priority.
+ * 
+ * store a two dimensional array for tiles on the backend, initialized to initial conditions of chess?
+ * 
+ * emit the player color, current turn color, tiles and spectator status to each new connection. on the client side, 
+ * accept these as inputs and set them on the gameboard instance.  
+ * 
+ * client side changes:
+ * Only allow nonspectators to move if currentPlayerAlliance is equal to current turn color
+ * in move update event. i. e. disable cdkDrag for spectators. spectators can have white player color by default.
+ * change client side so that black has pieces close to them, and inverted from whites point of view.
+ * Don't allow enemy's hidden graveyard pieces to be revealed.
+ * 
+ * On moving a piece in the client, emit a move event to the socket. Change the current turn variable to prevent a move.
+ * 
+ * On the backend, when an emitted move event occurs, send a moveUpdate event to all the connections with the updated tiles and current turn.
+ * 
+ * on the client side, set tiles and current turn from app component when it recieves moveUpdate.
+ * implement game end logic, and when the game ends emit a gameEnd event. 
+ * 
+ * on the back end, when a gameEnd event is recieved, emit blank tiles to all sockets.
+ * 
+ * on the back end, when disconnect even is received, unset the corresponding socket variable.
+ * 
+ * 
+ * enhancement: 
+ * when opening the page, display a question asking if they want to play local or online.
+ * 
+ * enhancement: 
+ * implement a refresh somehow (button, route?), that calls a method on gameboard, sending a moveUpdate with initial condition tiles.
+ * 
+ * enhancement:
+ * create a chatbox element where all sockets can emit sendMessage events from client, and on server emit messageReceived events to clients updating 
+ * the chat messages. Chat messages can be stored on the client and server as an array. On the client component, just display the user: message for each
+ * message in the array. have a text input which emits the sendMessage event, pushing the message data to serverside array when the event is registered.
+ * have a clear messages button, which events a clearMessage event, reseeting the serverside array and senging that in a moveReceieved event to the client.
+ * 
+ * idea:
+ * listen for disconnect events and reset the tiles when all the sockets are unset.
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * have origin and target be the only data transmitted.
+ * on socket connection, send the current state (tiles, graveyards, reserves) from server.
+ * implement a method on the client to receive those data and set the board.
+ * on moving a piece, emit a socket event with target coordinates.
+ * when the server receives the move event, emit a moveUpdate event to all sockets.
+ * when the client receives a moveUpdate event, call a method which moves a piece (this method may need to be implemented, and refactor existing)
+ * 
+ */

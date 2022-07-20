@@ -12,6 +12,7 @@ export class Rook implements OnInit {
   public alliance: Alliance;
   public image: string;
   public isMysterious?: boolean = false;
+  public isRevealed = false;
 
 	constructor(alliance: Alliance) {
 		this.alliance = alliance;

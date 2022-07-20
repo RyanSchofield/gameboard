@@ -12,7 +12,7 @@ export class Bishop implements OnInit {
   public alliance: Alliance;
   public image: string;
   public isMysterious?: boolean = false;
-
+  public isRevealed?: boolean = false;
 	constructor(alliance: Alliance) {
 		this.alliance = alliance;
     this.image = this.alliance === Alliance.WHITE ? 'assets/white-bishop.png' : 'assets/black-bishop.png';

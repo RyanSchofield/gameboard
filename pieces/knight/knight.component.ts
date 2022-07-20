@@ -12,6 +12,7 @@ export class Knight implements OnInit {
   public alliance: Alliance;
   public image: string;
   public isMysterious?: boolean = false;
+  public isRevealed = false;
 
 	constructor(alliance: Alliance) {
 		this.alliance = alliance;
@@ -36,93 +37,69 @@ export class Knight implements OnInit {
 	  for (let i = 0; i < tiles.length; i++) {
 	    validMoves[i] = [];
     }
-    
-    //right up
-    if (origin.x + 2 < 8 && origin.y + 1 < 8) {
-      if (!this._tileHasAlly(tiles[origin.x + 2][origin.y + 1], tiles)) {
-        console.log('tile has ally');
-        validMoves[origin.x + 2][origin.y + 1] = true;
-      } 
 
-      if (this._tileHasEnemy(tiles[origin.x + 2][origin.y + 1], tiles)) {
-      }
-    }
-
-    //up right
+    //up right 2
     if (origin.x + 1 < 8 && origin.y + 2 < 8) {
       if (!this._tileHasAlly(tiles[origin.x + 1][origin.y + 2], tiles)) {
-        console.log('tile has ally');
+        console.log('up right, ');
         validMoves[origin.x + 1][origin.y + 2] = true;
       } 
-
-      if (this._tileHasEnemy(tiles[origin.x + 1][origin.y + 2], tiles)) {
-      }
     }
 
-    //up left
+    //up left 3
     if (origin.x - 1 > -1 && origin.y + 2 < 8) {
       if (!this._tileHasAlly(tiles[origin.x - 1][origin.y + 2], tiles)) {
-        console.log('tile has ally');
+        console.log('up left ');
         validMoves[origin.x - 1][origin.y + 2] = true;
       } 
-
-      if (this._tileHasEnemy(tiles[origin.x - 1][origin.y + 2], tiles)) {
-      }
     }
 
-    //left up
+    //left up 4
     if (origin.x - 2 > -1 && origin.y + 1 < 8) {
       if (!this._tileHasAlly(tiles[origin.x - 2][origin.y + 1], tiles)) {
-        console.log('tile has ally');
+        console.log('left up ');
         validMoves[origin.x - 2][origin.y + 1] = true;
       } 
-
-      if (this._tileHasEnemy(tiles[origin.x - 2][origin.y + 1], tiles)) {
-      }
     }
 
-    //right down
-    if (origin.x + 2 < 7 && origin.y - 1 > - 1) {
-      if (!this._tileHasAlly(tiles[origin.x + 2][origin.y - 1], tiles)) {
-        console.log('tile has ally');
-        validMoves[origin.x + 2][origin.y - 1] = true;
-      } 
-
-      if (this._tileHasEnemy(tiles[origin.x + 2][origin.y - 1], tiles)) {
-      }
-    }
-
-    //down right
-    if (origin.x + 1 < 7 && origin.y - 2 > -1) {
-      if (!this._tileHasAlly(tiles[origin.x + 1][origin.y - 2], tiles)) {
-        console.log('tile has ally');
-        validMoves[origin.x + 1][origin.y - 2] = true;
-      } 
-
-      if (this._tileHasEnemy(tiles[origin.x + 1][origin.y - 2], tiles)) {
-      }
-    }
-
-    //up left
-    if (origin.x - 1 > -1 && origin.y - 2 > -1) {
-      if (!this._tileHasAlly(tiles[origin.x - 1][origin.y - 2], tiles)) {
-        console.log('tile has ally');
-        validMoves[origin.x - 1][origin.y - 2] = true;
-      } 
-
-      if (this._tileHasEnemy(tiles[origin.x - 1][origin.y - 2], tiles)) {
-      }
-    }
-
-    //left down
+    //left down 8
     if (origin.x - 2 > -1 && origin.y - 1 > -1) {
       if (!this._tileHasAlly(tiles[origin.x - 2][origin.y - 1], tiles)) {
-        console.log('tile has ally');
+        console.log(' left down ');
         validMoves[origin.x - 2][origin.y - 1] = true;
       } 
+    }
 
-      if (this._tileHasEnemy(tiles[origin.x - 2][origin.y - 1], tiles)) {
-      }
+    //right up 1
+    if (origin.x + 2 < 8 && origin.y + 1 < 8) {
+      if (!this._tileHasAlly(tiles[origin.x + 2][origin.y + 1], tiles)) {
+        console.log('right up ');
+        validMoves[origin.x + 2][origin.y + 1] = true;
+      } 
+    }
+
+    //right down 5
+    if (origin.x + 2 < 8 && origin.y - 1 > - 1) {
+      if (!this._tileHasAlly(tiles[origin.x + 2][origin.y - 1], tiles)) {
+        console.log('right down ');
+        validMoves[origin.x + 2][origin.y - 1] = true;
+      } 
+    }
+
+    //down right 6
+    if (origin.x + 1 < 8 && origin.y - 2 > -1) {
+      if (!this._tileHasAlly(tiles[origin.x + 1][origin.y - 2], tiles)) {
+        console.log('down right ');
+        validMoves[origin.x + 1][origin.y - 2] = true;
+      } 
+    }
+
+    //down left 7 
+    if (origin.x - 1 > -1 && origin.y - 2 > -1) {
+      if (!this._tileHasAlly(tiles[origin.x - 1][origin.y - 2], tiles)) {
+        console.log('down left');
+        validMoves[origin.x - 1][origin.y - 2] = true;
+      } 
     }
 
     return validMoves;

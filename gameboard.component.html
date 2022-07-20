@@ -1,11 +1,19 @@
+<p>{{ message }}</p>
 <div class="black-graveyard">
   <div class="captured-piece" *ngFor="let piece of blackGraveyard; let i = index">
-      <img [src]="piece.image" 
-        [style.background-color]="piece.isMysterious ? 'gray' : 'none'"
-        [style.border-radius]="'50%'"
+    <div class="piece-image" 
+      [style.background-color]="piece.isMysterious ? 'gray' : 'none'" 
+      [style.border-radius]="'75%'"
+      (click)="piece.isRevealed = !piece.isRevealed || !piece.isMysterious"
+    >
+      <img [src]="piece.image"
+        [class.hidden]="!piece.isRevealed && piece.isMysterious"
+        
       >
+    </div>
   </div>
 </div>
+
 <div class="gameboard" cdkDropListGroup>
 <div class="gameboard-row" *ngFor="let row of tiles; let i = index" (cdkDropListDropped)="drop($any($event))">
   <div 
@@ -18,9 +26,8 @@
 	  *ngIf="tile.piece"
 	  cdkDrag [cdkDragData]="{x: i, y: j, piece: tile.piece}"
 	  [cdkDragDisabled]="tile.piece.alliance != currentTurn"
-	  (cdkDragStarted)="drag($any($event))" 
-	  [style.background-color]="tile.piece.isMysterious ? 'gray' : 'none'"
-    [style.border-radius]="'50%'"
+	  (cdkDragStarted)="drag($any($event))"
+    [class.mysterious]="tile.piece.isMysterious"
 	  >
       <img [src]="tile.piece.image" height="100%">
     </div>
@@ -29,9 +36,15 @@
 </div>
 <div class="white-graveyard">
   <div class="captured-piece" *ngFor="let piece of whiteGraveyard; let i = index">
-      <img [src]="piece.image" 
-        [style.background-color]="piece.isMysterious ? 'gray' : 'none'"
-        [style.border-radius]="'50%'"
-      >
+   <div class="piece-image" 
+    [style.background-color]="piece.isMysterious ? 'gray' : 'none'" 
+    [style.border-radius]="'75%'"
+    (click)="piece.isRevealed = !piece.isRevealed || !piece.isMysterious"
+   >
+    <img [src]="piece.image"
+      [class.hidden]="!piece.isRevealed && piece.isMysterious"
+      
+    >
+   </div>
   </div>
 </div>

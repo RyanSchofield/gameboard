@@ -12,6 +12,7 @@ export class Pawn implements OnInit {
   public alliance: Alliance;
   public image: string;
   public isMysterious?: boolean = false;
+  public isRevealed = false;
   public firstMove: boolean = true;
 
 	constructor(alliance: Alliance) {
@@ -39,9 +40,9 @@ export class Pawn implements OnInit {
     }
     
     if (this.alliance === Alliance.WHITE) {
-      if (origin.x + 1 < 8 && !this._tileHasAlly(tiles[origin.x + 1][origin.y], tiles)) {
+      if (origin.x + 1 < 8 && !this._tileHasAlly(tiles[origin.x + 1][origin.y], tiles) && !this._tileHasEnemy(tiles[origin.x + 1][origin.y], tiles)) {
         validMoves[origin.x + 1][origin.y] = true;
-        if (origin.x + 2 < 8 && !this._tileHasAlly(tiles[origin.x + 2][origin.y], tiles) && this.isMysterious) {
+        if (origin.x + 2 < 8 && !this._tileHasAlly(tiles[origin.x + 2][origin.y], tiles)  && !this._tileHasEnemy(tiles[origin.x + 2][origin.y], tiles) && this.isMysterious) {
           validMoves[origin.x + 2][origin.y] = true;
         }
       }
@@ -56,9 +57,9 @@ export class Pawn implements OnInit {
     }
 
     if (this.alliance === Alliance.BLACK) {
-      if (origin.x - 1 > -1 && !this._tileHasAlly(tiles[origin.x - 1][origin.y], tiles)) {
+      if (origin.x - 1 > -1 && !this._tileHasAlly(tiles[origin.x - 1][origin.y], tiles) && !this._tileHasEnemy(tiles[origin.x - 1][origin.y], tiles)) {
         validMoves[origin.x - 1][origin.y] = true;
-        if (origin.x - 2 > -1 && !this._tileHasAlly(tiles[origin.x - 2][origin.y], tiles) && this.isMysterious) {
+        if (origin.x - 2 > -1 && !this._tileHasAlly(tiles[origin.x - 2][origin.y], tiles)  && !this._tileHasEnemy(tiles[origin.x - 2][origin.y], tiles) && this.isMysterious) {
           validMoves[origin.x - 2][origin.y] = true;
         }
       }
